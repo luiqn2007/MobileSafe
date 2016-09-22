@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SettingChecked">
+        <attr name="title" format="string"/>
+        <attr name="des" format="string"/>
+        <attr name="checked" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="SettingListShow">
+        <attr name="title"/>
+        <attr name="hideDesHead" format="boolean"/>
+        <attr name="choose" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="PasswordText">
+        <attr name="password" format="string"/>
+        <attr name="canView" format="boolean"/>
+        <attr name="showValue" format="boolean"/>
+        <attr name="hint" format="string"/>
+    </declare-styleable>
+</resources>

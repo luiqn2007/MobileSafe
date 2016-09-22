@@ -8,4 +8,63 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="Transparent">
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+    </style>
+
+    <style name="Button_Step">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:background">@drawable/button_leader</item>
+        <item name="android:padding">10dp</item>
+    </style>
+
+    <style name="Button_Next" parent="Button_Step">
+        <item name="android:text">下一步</item>
+        <item name="android:onClick">next</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:drawableRight">@drawable/next</item>
+    </style>
+
+    <style name="Button_Previous" parent="Button_Step">
+        <item name="android:text">上一步</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:onClick">previous</item>
+        <item name="android:drawableLeft">@drawable/previous</item>
+    </style>
+
+    <style name="Button_Dialog">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/button_leader</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="Text_Title">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:background">#aa66ff00</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="Text_Star">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:drawableLeft">@android:drawable/star_big_on</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="View_Line">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0.5dp</item>
+        <item name="android:background">#77000000</item>
+    </style>
+
+
 </resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ui="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="demo.lq2007.mobilesafe.activity.items.SettingActivity">
+
+    <TextView
+        style="@style/Text_Title"
+        android:text="设置中心"/>
+
+    <demo.lq2007.mobilesafe.ui.SettingChecked
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        ui:title="自动更新"
+        ui:des="启动时自动检查更新"
+        android:id="@+id/sl_update"/>
+
+    <demo.lq2007.mobilesafe.ui.SettingChecked
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        ui:title="归属地显示"
+        ui:des="来电时显示归属地提示"
+        android:id="@+id/sl_phone"/>
+
+    <demo.lq2007.mobilesafe.ui.SettingListShow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        ui:title="来电归属地Toast设置"
+        ui:hideDesHead="true"
+        android:id="@+id/sl_toast"/>
+
+</LinearLayout>

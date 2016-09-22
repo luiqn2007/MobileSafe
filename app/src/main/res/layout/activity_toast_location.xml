@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#aa000000">
+
+    <RelativeLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:background="@drawable/call_locate_blue"
+        android:id="@+id/layout_toast">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/security"
+            android:id="@+id/imageView" />
+
+        <TextView
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="双击居中 ^_^"
+            android:textColor="#fff"
+            android:textSize="23dp"
+            android:id="@+id/tv_result"
+            android:layout_alignBottom="@+id/imageView"
+            android:layout_toRightOf="@+id/imageView"/>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="按住提示框拖放到任意位置\n按返回键立即生效"
+        android:background="@drawable/call_locate_blue"
+        android:textColor="#FF000000"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:alpha="0.8"
+        android:id="@+id/tv_bottommsg"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="按住提示框拖放到任意位置\n按返回键立即生效"
+        android:background="@drawable/call_locate_blue"
+        android:textColor="#FF000000"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:alpha="0.8"
+        android:id="@+id/tv_topmsg"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+</RelativeLayout>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ui="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center" android:background="#ffffffff">
+
+    <TextView
+        style="@style/Text_Title"
+        android:text="请输入密码"/>
+
+    <demo.lq2007.mobilesafe.ui.PasswordText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        ui:hint="请输入密码"
+        android:id="@+id/pt_pwd"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            style="@style/Button_Dialog"
+            android:text="确定"
+            android:id="@+id/btn_set"/>
+        <Button
+            style="@style/Button_Dialog"
+            android:text="取消"
+            android:id="@+id/btn_cancel"/>
+    </LinearLayout>
+</LinearLayout>

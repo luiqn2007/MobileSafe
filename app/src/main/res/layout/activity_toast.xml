@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:ui="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="demo.lq2007.mobilesafe.activity.items.setting.ToastActivity">
+
+    <demo.lq2007.mobilesafe.ui.SettingListShow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sl_theme"
+        ui:title="归属地提示框风格"
+        ui:choose="灰"/>
+
+    <demo.lq2007.mobilesafe.ui.SettingListShow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sl_time"
+        ui:title="归属地Toast显示时间"
+        ui:choose="3000"
+        android:layout_below="@id/sl_theme"/>
+
+    <demo.lq2007.mobilesafe.ui.SettingListShow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sl_location2"
+        ui:title="归属地Toast显示位置"
+        ui:choose="通过拖拽方式决定Toast位置"
+        android:layout_below="@id/sl_time"/>
+</RelativeLayout>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Title"
+        android:textSize="18sp"
+        android:textColor="#ff000000"
+        android:id="@+id/tv_title"
+        android:textIsSelectable="false" />
+
+    <TextView
+        android:layout_marginTop="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="des:"
+        android:id="@+id/tv_des"
+        android:layout_below="@id/tv_title"
+        android:layout_alignLeft="@id/tv_title"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="开启"
+        android:id="@+id/tv_state"
+        android:layout_toRightOf="@id/tv_des"
+        android:layout_alignBottom="@id/tv_des"/>
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cb_check"
+        android:clickable="false"
+        android:focusable="false"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"/>
+
+    <View
+        style="@style/View_Line"
+        android:layout_below="@+id/tv_des"
+        android:layout_marginTop="5dp"/>
+</RelativeLayout>

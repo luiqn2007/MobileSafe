@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/logo"
-        android:layout_above="@+id/tv_splish_version"
+        android:layout_above="@+id/tv_version"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -37,12 +37,12 @@
         android:shadowRadius="10"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:id="@+id/tv_splish_version" />
+        android:id="@+id/tv_version" />
 
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_splish_version"
+        android:layout_below="@id/tv_version"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

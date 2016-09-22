@@ -5,37 +5,50 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.common.Callback;
+import org.xutils.common.util.IOUtil;
 import org.xutils.http.RequestParams;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
 import demo.lq2007.mobilesafe.R;
+import demo.lq2007.mobilesafe.utils.KeyUtil;
+import demo.lq2007.mobilesafe.utils.SpUtil;
 import demo.lq2007.mobilesafe.utils.StreamUtil;
+
+import static demo.lq2007.mobilesafe.utils.KeyUtil.TAG;
 
 public class SplishActivity extends AppCompatActivity {
 
-    String TAG = "SplishActivity";
     Handler handler;
 
     private final int ERROR_CONNECT = -1;
@@ -46,7 +59,7 @@ public class SplishActivity extends AppCompatActivity {
     private final int ERROR_IO = 5;
     private final int ERROR_JSON = 6;
 
-    @ViewInject(value = R.id.tv_splish_version)
+    @ViewInject(value = R.id.tv_version)
     TextView tv_version;
 
     private String mCode;
@@ -57,6 +70,8 @@ public class SplishActivity extends AppCompatActivity {
     File mSaveFilePath = Environment.getExternalStorageDirectory();
     File mSaveFile =  new File(mSaveFilePath, "1.json");
 
+    boolean first = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,8 +79,37 @@ public class SplishActivity extends AppCompatActivity {
         x.view().inject(this);
         initHandler();
 
+        Log.i(TAG, "onCreate: 开始运行");
+
         tv_version.setText("版本号:" + getVersionName());
+
+        //检查更新
         update();
+
+        //拷贝数据库
+        copyData();
+    }
+
+    /**
+     * 用于加载号码归属地数据库
+     */
+    private void copyData() {
+        AssetManager assetManager = getAssets();
+        try {
+            File db = new File(getFilesDir(), "address.db");
+            //写入软件私有空间
+            if(!db.exists()){
+                InputStream open = assetManager.open("address.db");
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(db));
+
+                IOUtil.copy(open, bos);
+                IOUtil.closeQuietly(open);
+                IOUtil.closeQuietly(bos);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -114,6 +158,12 @@ public class SplishActivity extends AppCompatActivity {
         builder.setPositiveButton("立即升级", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                // 设置权限
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    if(ContextCompat.checkSelfPermission(SplishActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                        ActivityCompat.requestPermissions(SplishActivity.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    }
+                }
                 startDownload();
                 builder.create().dismiss();
             }
@@ -127,6 +177,48 @@ public class SplishActivity extends AppCompatActivity {
         });
         builder.setCancelable(false);
         builder.show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        //检查是否完成授权
+        if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            Toast.makeText(this, "授权成功", Toast.LENGTH_SHORT).show();
+        } else {
+            //失败--第一次,提示重新授权
+            if(first){
+                first = false;
+                //构建提示授权的Dialog
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("授权申请");
+                builder.setMessage("我们需要申请内存卡读写权限来保存更新文件");
+                builder.setPositiveButton("授权", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ActivityCompat.requestPermissions(SplishActivity.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                        builder.create().dismiss();
+                    }
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        builder.create().cancel();
+                    }
+                });
+                builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        //失败--第二次,提示失败
+                        Toast.makeText(SplishActivity.this, "若没有此权限，我们将不能下载新版本到您的手机中", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.show();
+            } else {
+                //失败--第二次,提示失败
+                Toast.makeText(this, "若没有此权限，我们将不能下载新版本到您的手机中", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     /**
@@ -166,7 +258,7 @@ public class SplishActivity extends AppCompatActivity {
 
             @Override
             public void onLoading(long total, long current, boolean isDownloading) {
-                dialog.setMessage("下载进度:\n " + current + "//" + total);
+                dialog.setMessage("下载进度:\n " + current + "/" + total);
                 dialog.setProgress((int) (current * 100 / total));
             }
 
@@ -226,26 +318,38 @@ public class SplishActivity extends AppCompatActivity {
      */
     private void update() {
         new Thread(){
+            private void delay(){
+                // 检测延迟运行,使启动界面至少存在2s
+                long delayTime = 2000 - SystemClock.currentThreadTimeMillis();
+                Log.i(TAG, "delay: " + delayTime);
+                if(delayTime > 0){
+                    SystemClock.sleep(delayTime);
+                }
+            }
+
             @Override
             public void run() {
                 super.run();
+                // 删除以前的临时文件
+                if(mSaveFile.isFile()){
+                    mSaveFile.delete();
+                }
                 Message msg = Message.obtain();
-                try {
-                    // 删除以前的临时文件
-                    if(mSaveFile.isFile()){
-                        mSaveFile.delete();
-                    }
-                    // 连接服务器
-                    URL url = new URL("http://192.168.1.100:8080/json.html");
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    // 设置超时
-                    conn.setConnectTimeout(5000);   //连接超时
-                    conn.setReadTimeout(5000);      //读取超时
-                    // 设置请求方式
-                    conn.setRequestMethod("GET");
-                    // 连接
-                    int responseCode = conn.getResponseCode();
-                    if(responseCode == 200){
+                msg.what = NO_NEW_VERSION;
+                if(SpUtil.getBoolean(SplishActivity.this, KeyUtil.CHECK_UPDATE, KeyUtil.default_CHECK_UPDATE)) {
+                    try {
+                        // 连接服务器
+                        URL url = new URL(KeyUtil.UPDATA_MSG);
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                        // 设置超时
+                        conn.setConnectTimeout(3000);   //连接超时
+                        conn.setReadTimeout(5000);      //读取超时
+                        // 设置请求方式
+                        conn.setRequestMethod("GET");
+                        // 连接
+                        int responseCode = conn.getResponseCode();
+                        Log.i(TAG, "run: responseCode : " + responseCode);
+                        if (responseCode == 200) {
                         /*
                         获取版本信息
                         code    版本号
@@ -253,43 +357,47 @@ public class SplishActivity extends AppCompatActivity {
                         apkUrl  下载路径
                         使用格式:常用JSON体积小,而XML可加密常用于需求安全性高的场合
                          */
-                        // 获取数据
-                        String json = StreamUtil.parserStream(conn.getInputStream());
-                        conn.disconnect();
-                        // 解析JSON,获取数据
-                        JSONObject jsonObject = new JSONObject(json);
-                        mCode = jsonObject.getString("code");
-                        mApkUrl = jsonObject.getString("apkUrl");
-                        mDes = jsonObject.getString("des");
-                        // 检测延迟运行,使启动界面至少存在2s
-                        long delayTime = 2000 - SystemClock.currentThreadTimeMillis();
-                        if(delayTime > 0){
-                            SystemClock.sleep(delayTime);
-                        }
-                        // 校验版本
-                        if(!mCode.equals(getVersionName())){
-                            // 返回新版本,提示更新
-                            msg.what = GET_NEW_VERSION;
+                            // 获取数据
+                            String json = StreamUtil.parserStream(conn.getInputStream());
+                            conn.disconnect();
+                            // 解析JSON,获取数据
+                            JSONObject jsonObject = new JSONObject(json);
+                            mCode = jsonObject.getString("code");
+                            mApkUrl = jsonObject.getString("apkUrl");
+                            mDes = jsonObject.getString("des");
+                            // 检测延迟运行,使启动界面至少存在2s
+                            Log.i(TAG, "run: delay");
+                            delay();
+                            // 校验版本
+                            if (!mCode.equals(getVersionName())) {
+                                // 返回新版本,提示更新
+                                msg.what = GET_NEW_VERSION;
+                            } else {
+                                msg.what = NO_NEW_VERSION;
+                            }
                         } else {
-                            msg.what = NO_NEW_VERSION;
+                            msg.obj = responseCode;
+                            msg.what = ERROR_CONNECT;
                         }
-                    } else {
-                        msg.obj = responseCode;
-                        msg.what = ERROR_CONNECT;
+                    } catch (ProtocolException e) {
+                        e.printStackTrace();
+                        msg.what = ERROR_PROTOCOL;
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                        msg.what = ERROR_URL;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        msg.what = ERROR_IO;
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        msg.what = ERROR_JSON;
+                    } finally {
+                        handler.sendMessage(msg);
                     }
-                } catch (ProtocolException e) {
-                    e.printStackTrace();
-                    msg.what = ERROR_PROTOCOL;
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                    msg.what = ERROR_URL;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    msg.what = ERROR_IO;
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    msg.what = ERROR_JSON;
-                } finally {
+                } else {
+                    // 检测延迟运行,使启动界面至少存在2s
+                    Log.i(TAG, "run: delay");
+                    delay();
                     handler.sendMessage(msg);
                 }
             }
